@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Proxmox Homarr</title>
+        <style>
+            body {
+                text-align:center;
+            }
+            
+            h1 {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+                font-weight: 700;
+                font-size:34px;
+                margin:0;
+                padding-top:7px;
+                padding-bottom:7px;
+            }
+
+            p {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+                font-size:18px;
+                margin:0;
+                padding-top:5px;
+                padding-bottom:5px;
+            }
+
+            span {
+                font-weight:bold;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Proxmox - Node 1</h1>
+        <p>CPU: <span id="cpuDisplay"></span>%</p>
+        <p>Mem: <span id="memoryDisplay"></span>%</p>
+        <p>VMs: <span id="usedVmsDisplay"></span>/<span id="totalVmsDisplay"></span></p>
+
+        <script>
+            //Node
+            var node = "pve-cnt";
+            
+            //Update time interval (seconds * 100)
+            var updateTimeInterval = 60000;
+
+            const cpuDisplay = document.querySelector("#cpuDisplay");
+            const memoryDisplay = document.querySelector("#memoryDisplay");
+            const usedVmsDisplay = document.querySelector("#usedVmsDisplay");
+            const totalVmsDisplay = document.querySelector("#totalVmsDisplay");
+            
+            //Get initial data
+            getData();
+            
+            //Get data every x seconds
+            setInterval(() => {
+                getData();
+            }, updateTimeInterval);
+
+            //Get data function
+            function getData() {
+                fetch(`https://pve.afortney.com/api2/json/nodes/${node}/status`, {
+                    headers: {
+                        Authorization: "PVEAPIToken=root@pam!homer=381e5b1e-61c1-4025-9e9c-3a61a0ca9900"
+                    }
+                }).then((res) => {
+                    return res.json();
+                }).then((data) => {
+                    //CPU usage (percentage)
+                    cpuDisplay.textContent = (data.data.cpu * 100).toFixed(1);
+                    //Memory usage (percentage)
+                    memoryDisplay.textContent = ((data.data.memory.used / data.data.memory.total) * 100).toFixed(1);
+                });
+                fetch(`https://pve.afortney.com/api2/json/nodes/${node}/qemu`, {
+                    headers: {
+                        Authorization: "PVEAPIToken=root@pam!homer=381e5b1e-61c1-4025-9e9c-3a61a0ca9900"
+                    }
+                }).then((res) => {
+                    return res.json();
+                }).then((data) => {
+                    //Number of VMs active and total
+                    var totalVms = 0;
+                    var runningVms = 0;
+                    for(var vm in data.data) {
+                        totalVms++;
+                        if(data.data[vm].status === "running") {
+                            runningVms++;
+                        }
+                    }
+                    usedVmsDisplay.textContent = runningVms;
+                    totalVmsDisplay.textContent = totalVms;
+                });
+            }
+        </script>
+    </body>
+</html>
