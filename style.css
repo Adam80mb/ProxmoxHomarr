@@ -45,3 +45,11 @@ p {
 span {
     font-weight:bold;
 }
+
+.green {
+    color:green;
+}
+
+.red {
+    color:red;
+}

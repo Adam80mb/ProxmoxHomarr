@@ -24,9 +24,23 @@ function getData() {
         return res.json();
     }).then((data) => {
         //CPU usage (percentage)
-        cpuDisplay.textContent = (data.data.cpu * 100).toFixed(1);
+        cpuDisplay.textContent = `${(data.data.cpu * 100).toFixed(1)}%`;
+        if(parseFloat(cpuDisplay.textContent) >= 85) {
+            //Red text
+            cpuDisplay.setAttribute("class", "red");
+        } else {
+            //Green text
+            cpuDisplay.setAttribute("class", "green");
+        }
         //Memory usage (percentage)
-        memoryDisplay.textContent = ((data.data.memory.used / data.data.memory.total) * 100).toFixed(1);
+        memoryDisplay.textContent = `${((data.data.memory.used / data.data.memory.total) * 100).toFixed(1)}%`;
+        if(parseFloat(memoryDisplay.textContent) >= 85) {
+            //Red text
+            memoryDisplay.setAttribute("class", "red");
+        } else {
+            //Green text
+            memoryDisplay.setAttribute("class", "green");
+        }
     });
     fetch(`https://pve.afortney.com/api2/json/nodes/${node}/qemu`, {
         headers: {
