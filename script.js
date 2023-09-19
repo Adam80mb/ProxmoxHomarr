@@ -18,7 +18,7 @@ setInterval(() => {
 function getData() {
     fetch(`https://pve.afortney.com/api2/json/nodes/${node}/status`, {
         headers: {
-            Authorization: "PVEAPIToken=root@pam!homer=381e5b1e-61c1-4025-9e9c-3a61a0ca9900"
+            Authorization: "PVEAPIToken=root@pam!homarr=e546afe4-efc0-44a4-a4a7-9a87d563d7b6"
         }
     }).then((res) => {
         return res.json();
